@@ -1,0 +1,38 @@
+name: Next.js CI
+
+# 1. Khai báo sự kiện kích hoạt Workflow
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# 2. Khai báo các công việc cần làm
+jobs:
+  build-and-test:
+    name: Build and Lint
+    runs-on: ubuntu-latest # Chạy trên máy ảo Ubuntu do GitHub cung cấp
+
+    steps:
+      # Bước 1: Lấy code của bạn từ GitHub về máy ảo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Bước 2: Cài đặt môi trường Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Sử dụng Node.js bản 20
+          cache: 'npm'       # Cache lại node_modules để chạy nhanh hơn ở lần sau
+
+      # Bước 3: Cài đặt các thư viện (dependencies)
+      - name: Install dependencies
+        run: npm ci
+
+      # Bước 4: Chạy kiểm tra lỗi cú pháp (Linting)
+      - name: Run ESLint
+        run: npm run lint
+
+      # Bước 5: Build thử dự án để đảm bảo không có lỗi lúc compile
+      - name: Build Next.js app
+        run: npm run build
